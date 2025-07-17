@@ -1,39 +1,40 @@
 /* Travel Planner Form Styles */
 .container {
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 0;
 }
 
 .header {
   background: rgba(255, 255, 255, 0.1);
-  padding: 60rpx 40rpx 40rpx;
+  padding: 30px 20px 20px;
   text-align: center;
-  backdrop-filter: blur(10rpx);
+  backdrop-filter: blur(5px);
 }
 
 .title {
-  font-size: 48rpx;
+  font-size: 24px;
   font-weight: bold;
   color: #ffffff;
-  margin-bottom: 16rpx;
+  margin-bottom: 8px;
 }
 
 .subtitle {
-  font-size: 28rpx;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
 }
 
 .form {
   background: #ffffff;
-  margin: 40rpx 32rpx;
-  border-radius: 24rpx;
-  padding: 48rpx 40rpx;
-  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.1);
+  margin: 20px 16px;
+  border-radius: 12px;
+  padding: 24px 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .form-item {
-  margin-bottom: 48rpx;
+  margin-bottom: 24px;
 }
 
 .form-item:last-child {
@@ -42,19 +43,19 @@
 
 .label {
   display: block;
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 600;
   color: #333333;
-  margin-bottom: 16rpx;
+  margin-bottom: 16px;
 }
 
 .input {
   width: 100%;
-  height: 88rpx;
-  border: 2rpx solid #e8e8e8;
-  border-radius: 12rpx;
-  padding: 0 24rpx;
-  font-size: 30rpx;
+  height: 44px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 15px;
   color: #333333;
   background: #fafafa;
   box-sizing: border-box;
@@ -67,11 +68,11 @@
 
 .textarea {
   width: 100%;
-  min-height: 120rpx;
-  border: 2rpx solid #e8e8e8;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
-  font-size: 30rpx;
+  min-height: 120px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 15px;
   color: #333333;
   background: #fafafa;
   box-sizing: border-box;
@@ -87,27 +88,29 @@
 .date-row {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 8px;
 }
 
 .date-picker {
   flex: 1;
-  height: 88rpx;
-  border: 2rpx solid #e8e8e8;
-  border-radius: 12rpx;
+  height: 46px;
+  border: 1px solid #E3E3E3;
+  border-radius: 6px;
   background: #fafafa;
 }
 
 .picker-text {
-  height: 88rpx;
-  line-height: 88rpx;
-  padding: 0 24rpx;
-  font-size: 30rpx;
+  height: 44px;
+  line-height: 44px;
+  padding: 0 12px;
+  font-size: 15px;
   color: #333333;
+  border-radius: 8px;
+  border: 1px solid #E3E3E3;
 }
 
 .date-separator {
-  font-size: 28rpx;
+  font-size: 14px;
   color: #666666;
   font-weight: 500;
 }
@@ -115,40 +118,52 @@
 /* Counter Styles */
 .counter-row {
   display: flex;
-  gap: 32rpx;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .counter-item {
+  gap: 8px;
   flex: 1;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 24rpx;
-  background: #fafafa;
-  border-radius: 12rpx;
-  border: 2rpx solid #e8e8e8;
+}
+
+.label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
 .counter-label {
-  font-size: 30rpx;
+  font-size: 14px;
   color: #333333;
   font-weight: 500;
 }
+.counter-label-description {
+  font-size: 12px;
+  color: #707070;
+}
 
 .counter {
+  padding: 8px;
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 8px;
+  border: 1px solid #E3E3E3;
+  border-radius: 8px;
 }
 
 .counter-btn {
-  width: 60rpx;
-  height: 60rpx;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #1677ff;
   color: #ffffff;
   border: none;
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -160,27 +175,27 @@
 }
 
 .counter-value {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 600;
   color: #333333;
-  min-width: 40rpx;
+  min-width: 20px;
   text-align: center;
 }
 
 /* Submit Button */
 .submit-btn {
   width: 100%;
-  height: 96rpx;
+  height: 48px;
   background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
   border: none;
-  border-radius: 48rpx;
-  margin-top: 48rpx;
-  box-shadow: 0 8rpx 24rpx rgba(22, 119, 255, 0.3);
+  border-radius: 24px;
+  margin-top: 24px;
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
 }
 
 .submit-btn:active {
   transform: translateY(2rpx);
-  box-shadow: 0 4rpx 12rpx rgba(22, 119, 255, 0.3);
+  box-shadow: 0 2px 6px rgba(22, 119, 255, 0.3);
 }
 
 .submit-btn.loading {
@@ -189,7 +204,7 @@
 }
 
 .submit-text {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 600;
   color: #ffffff;
 }
@@ -210,20 +225,20 @@
 
 .loading-content {
   background: #ffffff;
-  padding: 60rpx 80rpx;
-  border-radius: 24rpx;
+  padding: 30px 40px;
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .spinner {
-  width: 80rpx;
-  height: 80rpx;
-  border: 6rpx solid #f3f3f3;
-  border-top: 6rpx solid #1677ff;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1677ff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 32rpx;
+  margin: 0 auto 16px;
 }
 
 @keyframes spin {
@@ -232,26 +247,26 @@
 }
 
 .loading-text {
-  font-size: 28rpx;
+  font-size: 14px;
   color: #666666;
-  margin-top: 16rpx;
+  margin-top: 8px;
 }
 
 /* Responsive Design */
-@media (max-width: 750rpx) {
+@media (max-width: 375px) {
   .form {
-    margin: 32rpx 24rpx;
-    padding: 40rpx 32rpx;
+    margin: 16px 12px;
+    padding: 20px 16px;
   }
   
   .counter-row {
     flex-direction: column;
-    gap: 24rpx;
+    gap: 12px;
   }
   
   .date-row {
     flex-direction: column;
-    gap: 24rpx;
+    gap: 12px;
   }
   
   .date-picker {

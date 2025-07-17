@@ -1,8 +1,4 @@
 <view class="container">
-  <view class="header">
-    <text class="title">Travel Planner</text>
-    <text class="subtitle">Plan your perfect trip</text>
-  </view>
 
   <form onSubmit="onSubmit" class="form">
     <!-- Destination Input -->
@@ -50,7 +46,10 @@
       <text class="label">Travelers</text>
       <view class="counter-row">
         <view class="counter-item">
+        <view class="label-group">
           <text class="counter-label">Adults</text>
+          <text class="counter-label-description">Usia 13 tahun ke atas</text>
+        </view>
           <view class="counter">
             <button class="counter-btn" onTap="decreaseAdults">-</button>
             <text class="counter-value">{{formData.adults}}</text>
@@ -58,7 +57,10 @@
           </view>
         </view>
         <view class="counter-item">
-          <text class="counter-label">Children</text>
+          <view class="label-group">
+            <text class="counter-label">Children</text>
+            <text class="counter-label-description">Usia 2 - 12 tahun</text>
+          </view>
           <view class="counter">
             <button class="counter-btn" onTap="decreaseChildren">-</button>
             <text class="counter-value">{{formData.children}}</text>
