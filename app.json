@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/suggestions/suggestions",
+    "pages/detail/detail"
+  ],
+  "window": {
+    "defaultTitle": "Travel Planner",
+    "backgroundColor": "#F7F7F7"
+  }
+}

@@ -1,0 +1,91 @@
+<view class="container">
+  <view class="header">
+    <button class="back-btn" onTap="onBack">
+      <text class="back-icon">←</text>
+    </button>
+    <text class="header-title">Activity Details</text>
+    <view class="placeholder"></view>
+  </view>
+
+  <view class="content">
+    <!-- Day Badge -->
+    <view class="day-badge">
+      <text class="day-text">{{day}}</text>
+    </view>
+
+    <!-- Activity Title -->
+    <view class="activity-section">
+      <text class="activity-title">{{activity}}</text>
+    </view>
+
+    <!-- Activity Details -->
+    <view class="details-section">
+      <text class="section-title">Activity Information</text>
+      
+      <view class="detail-card">
+        <view class="detail-item">
+          <text class="detail-label">📍 Location</text>
+          <text class="detail-value">{{location || 'Location details will be provided'}}</text>
+        </view>
+        
+        <view class="detail-item">
+          <text class="detail-label">⏰ Duration</text>
+          <text class="detail-value">{{duration || '2-3 hours (estimated)'}}</text>
+        </view>
+        
+        <view class="detail-item">
+          <text class="detail-label">💰 Cost</text>
+          <text class="detail-value">{{cost || 'Cost varies'}}</text>
+        </view>
+        
+        <view class="detail-item">
+          <text class="detail-label">👥 Best For</text>
+          <text class="detail-value">{{bestFor || 'All travelers'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Description -->
+    <view class="description-section">
+      <text class="section-title">Description</text>
+      <view class="description-card">
+        <text class="description-text">
+          {{description || 'This activity offers a wonderful experience that aligns with your travel preferences. More detailed information will be available when you book or visit the location.'}}
+        </text>
+      </view>
+    </view>
+
+    <!-- Tips Section -->
+    <view class="tips-section">
+      <text class="section-title">💡 Tips & Recommendations</text>
+      <view class="tips-card">
+        <view class="tip-item" a:for="{{tips}}" a:key="{{index}}">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">{{item}}</text>
+        </view>
+        <view class="tip-item" a:if="{{tips.length === 0}}">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">Book in advance for better prices</text>
+        </view>
+        <view class="tip-item" a:if="{{tips.length === 0}}">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">Check weather conditions before visiting</text>
+        </view>
+        <view class="tip-item" a:if="{{tips.length === 0}}">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">Bring comfortable walking shoes</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Action Buttons -->
+    <view class="action-section">
+      <button class="action-btn secondary" onTap="onAddToFavorites">
+        <text class="btn-text">❤️ Add to Favorites</text>
+      </button>
+      <button class="action-btn primary" onTap="onGetDirections">
+        <text class="btn-text">🗺️ Get Directions</text>
+      </button>
+    </view>
+  </view>
+</view>
