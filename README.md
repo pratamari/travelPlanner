@@ -54,14 +54,18 @@ A comprehensive travel planning mini program built for Alipay platform that help
 The app integrates with Hermes API for travel suggestions:
 
 ```javascript
-// Request Format
+// Request Format (wrapped in inputs object)
 {
-  "destination": "Bali, Indonesia",
-  "departure_date": "2024-07-20",
-  "return_date": "2024-07-25",
-  "adults": 2,
-  "children": 0,
-  "activity_reference": "beach activities, cultural tours"
+  "inputs": {
+    "destination": "Bali, Indonesia",
+    "departure_date": "20-07-2024",  // DD-MM-YYYY format
+    "return_date": "25-07-2024",     // DD-MM-YYYY format
+    "adult": 2,                       // Note: 'adult' not 'adults'
+    "children": 0,                    // Fixed: correct spelling
+    "activity_reference": "beach activities, cultural tours"
+  },
+  "response_mode": "blocking",
+  "user": "username"
 }
 
 // Response Format

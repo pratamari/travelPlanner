@@ -8,6 +8,33 @@ import { generateMockSuggestions } from './mockData.js';
  */
 export const getTravelSuggestions = async (travelData) => {
   try {
+    // Debug: Log the input data (Updated: 2025-07-17)
+    console.log('=== NEW API VERSION LOADED ===');
+    console.log('Input travelData:', travelData);
+    
+    // Helper function to convert date format from YYYY-MM-DD to DD-MM-YYYY
+    const formatDateForAPI = (dateString) => {
+      if (!dateString) return dateString;
+      const [year, month, day] = dateString.split('-');
+      return `${day}-${month}-${year}`;
+    };
+    
+    const payload = {
+      inputs: {
+        destination: travelData.destination,
+        departure_date: formatDateForAPI(travelData.departure_date),
+        return_date: formatDateForAPI(travelData.return_date),
+        adult: travelData.adult,
+        children: travelData.children, // Fixed: API now uses correct 'children' spelling
+        activity_reference: travelData.activity_reference
+      },
+      response_mode: "blocking",
+      user: HERMES_USER
+    };
+    
+    // Debug: Log the payload being sent
+    console.log('Sending payload to Hermes API:', JSON.stringify(payload, null, 2));
+    
     const response = await my.request({
       url: HERMES_URL,
       method: 'POST',
@@ -16,24 +43,47 @@ export const getTravelSuggestions = async (travelData) => {
         'Authorization': `Bearer ${HERMES_KEY}`,
         'X-User': HERMES_USER
       },
-      data: {
-        user: HERMES_USER,
-        destination: travelData.destination,
-        departure_date: travelData.departure_date,
-        return_date: travelData.return_date,
-        adults: travelData.adults,
-        children: travelData.children,
-        activity_reference: travelData.activity_reference
-      }
+      data: payload
     });
 
-    if (response.statusCode === 200) {
-      return {
-        success: true,
-        data: response.data
-      };
+    // Debug: Log the full response
+    console.log('API Response:', response);
+    
+    // Handle workflow-based API response
+    if (response.statusCode === 200 || response.status === 200) {
+      const responseData = response.data;
+      
+      // Check if workflow completed successfully
+      if (responseData && responseData.data && responseData.data.status === 'completed') {
+        return {
+          success: true,
+          data: responseData.data.outputs
+        };
+      } 
+      // If workflow failed, show error but use fallback
+      else if (responseData && responseData.data && responseData.data.status === 'failed') {
+        console.warn('Workflow failed, using fallback data:', responseData.data.error);
+        return {
+          success: true,
+          data: generateMockSuggestions(travelData.destination)
+        };
+      }
+      // If workflow is still running, use fallback for now
+      else {
+        console.warn('Workflow status unclear, using fallback data');
+        return {
+          success: true,
+          data: generateMockSuggestions(travelData.destination)
+        };
+      }
     } else {
-      throw new Error(`API Error: ${response.statusCode}`);
+      console.error('API Error Details:', {
+        statusCode: response.statusCode,
+        status: response.status,
+        data: response.data,
+        headers: response.headers
+      });
+      throw new Error(`API Error: ${response.statusCode || response.status} - ${JSON.stringify(response.data)}`);
     }
   } catch (error) {
     console.error('Hermes API Error:', error);

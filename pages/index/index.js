@@ -6,7 +6,7 @@ Page({
       destination: '',
       departure_date: '',
       return_date: '',
-      adults: 1,
+      adult: 1,
       children: 0,
       activity_reference: ''
     },
@@ -66,38 +66,30 @@ Page({
   },
 
   // Counter handlers
-  increaseAdults() {
-    const adults = this.data.formData.adults + 1;
-    if (adults <= 10) {
+  onAdultIncrease() {
+    this.setData({
+      'formData.adult': this.data.formData.adult + 1
+    });
+  },
+
+  onAdultDecrease() {
+    if (this.data.formData.adult > 1) {
       this.setData({
-        'formData.adults': adults
+        'formData.adult': this.data.formData.adult - 1
       });
     }
   },
 
-  decreaseAdults() {
-    const adults = this.data.formData.adults - 1;
-    if (adults >= 1) {
-      this.setData({
-        'formData.adults': adults
-      });
-    }
+  onChildrenIncrease() {
+    this.setData({
+      'formData.children': this.data.formData.children + 1
+    });
   },
 
-  increaseChildren() {
-    const children = this.data.formData.children + 1;
-    if (children <= 10) {
+  onChildrenDecrease() {
+    if (this.data.formData.children > 0) {
       this.setData({
-        'formData.children': children
-      });
-    }
-  },
-
-  decreaseChildren() {
-    const children = this.data.formData.children - 1;
-    if (children >= 0) {
-      this.setData({
-        'formData.children': children
+        'formData.children': this.data.formData.children - 1
       });
     }
   },
@@ -150,6 +142,10 @@ Page({
     this.setData({ loading: true });
 
     try {
+      // Debug: Log form data before sending
+      console.log('=== FORM SUBMISSION DEBUG ===');
+      console.log('Form data being sent:', JSON.stringify(this.data.formData, null, 2));
+      
       // Save form data locally
       saveTravelData(this.data.formData);
 

@@ -50,19 +50,19 @@
       <text class="label">Travelers</text>
       <view class="counter-row">
         <view class="counter-item">
-          <text class="counter-label">Adults</text>
-          <view class="counter">
-            <button class="counter-btn" onTap="decreaseAdults">-</button>
-            <text class="counter-value">{{formData.adults}}</text>
-            <button class="counter-btn" onTap="increaseAdults">+</button>
+          <text class="counter-label">Adult{{formData.adult > 1 ? 's' : ''}}</text>
+          <view class="counter-controls">
+            <view class="counter-btn" onTap="onAdultDecrease">-</view>
+            <text class="counter-value">{{formData.adult}}</text>
+            <view class="counter-btn" onTap="onAdultIncrease">+</view>
           </view>
         </view>
         <view class="counter-item">
-          <text class="counter-label">Children</text>
-          <view class="counter">
-            <button class="counter-btn" onTap="decreaseChildren">-</button>
+          <text class="counter-label">Children{{formData.children > 1 ? 's' : ''}}</text>
+          <view class="counter-controls">
+            <view class="counter-btn" onTap="onChildrenDecrease">-</view>
             <text class="counter-value">{{formData.children}}</text>
-            <button class="counter-btn" onTap="increaseChildren">+</button>
+            <view class="counter-btn" onTap="onChildrenIncrease">+</view>
           </view>
         </view>
       </view>

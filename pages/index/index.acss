@@ -135,7 +135,7 @@
   font-weight: 500;
 }
 
-.counter {
+.counter-controls {
   display: flex;
   align-items: center;
   gap: 16rpx;
