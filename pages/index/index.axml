@@ -1,0 +1,102 @@
+<view class="container">
+  <view class="header">
+    <text class="title">Travel Planner</text>
+    <text class="subtitle">Plan your perfect trip</text>
+  </view>
+
+  <form onSubmit="onSubmit" class="form">
+    <!-- Destination Input -->
+    <view class="form-item">
+      <text class="label">Destination</text>
+      <input 
+        class="input" 
+        placeholder="Enter destination" 
+        value="{{formData.destination}}"
+        onInput="onDestinationInput"
+        name="destination"
+      />
+    </view>
+
+    <!-- Date Picker -->
+    <view class="form-item">
+      <text class="label">Departure and Return Date</text>
+      <view class="date-row">
+        <picker 
+          mode="date" 
+          value="{{formData.departure_date}}"
+          onChange="onDepartureDateChange"
+          class="date-picker"
+        >
+          <view class="picker-text">
+            {{formData.departure_date || 'Departure Date'}}
+          </view>
+        </picker>
+        <text class="date-separator">to</text>
+        <picker 
+          mode="date" 
+          value="{{formData.return_date}}"
+          onChange="onReturnDateChange"
+          class="date-picker"
+        >
+          <view class="picker-text">
+            {{formData.return_date || 'Return Date'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- Travelers Count -->
+    <view class="form-item">
+      <text class="label">Travelers</text>
+      <view class="counter-row">
+        <view class="counter-item">
+          <text class="counter-label">Adults</text>
+          <view class="counter">
+            <button class="counter-btn" onTap="decreaseAdults">-</button>
+            <text class="counter-value">{{formData.adults}}</text>
+            <button class="counter-btn" onTap="increaseAdults">+</button>
+          </view>
+        </view>
+        <view class="counter-item">
+          <text class="counter-label">Children</text>
+          <view class="counter">
+            <button class="counter-btn" onTap="decreaseChildren">-</button>
+            <text class="counter-value">{{formData.children}}</text>
+            <button class="counter-btn" onTap="increaseChildren">+</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Activity Reference -->
+    <view class="form-item">
+      <text class="label">Activity Reference</text>
+      <textarea 
+        class="textarea" 
+        placeholder="Describe your preferred activities (e.g., beach, culture, adventure)"
+        value="{{formData.activity_reference}}"
+        onInput="onActivityInput"
+        maxlength="200"
+      />
+    </view>
+
+    <!-- Submit Button -->
+    <button 
+      class="submit-btn {{loading ? 'loading' : ''}}"
+      onTap="onSubmit"
+      disabled="{{loading}}"
+    >
+      <text class="submit-text">
+        {{loading ? 'Planning your trip...' : 'Get Travel Plan'}}
+      </text>
+    </button>
+  </form>
+
+  <!-- Loading Overlay -->
+  <view class="loading-overlay" a:if="{{loading}}">
+    <view class="loading-content">
+      <view class="spinner"></view>
+      <text class="loading-text">Creating your perfect itinerary...</text>
+    </view>
+  </view>
+</view>

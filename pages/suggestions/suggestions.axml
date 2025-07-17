@@ -1,0 +1,87 @@
+<view class="container">
+  <view class="header">
+    <text class="title">Your Travel Plan</text>
+    <text class="destination">{{destination}}</text>
+    <text class="dates">{{departure_date}} - {{return_date}}</text>
+  </view>
+
+  <!-- Loading State -->
+  <view class="loading-container" a:if="{{loading}}">
+    <view class="spinner"></view>
+    <text class="loading-text">Loading your itinerary...</text>
+  </view>
+
+  <!-- Error State -->
+  <view class="error-container" a:if="{{error}}">
+    <text class="error-text">{{error}}</text>
+    <button class="retry-btn" onTap="onRetry">Try Again</button>
+  </view>
+
+  <!-- Itinerary Content -->
+  <view class="content" a:if="{{!loading && !error && itinerary.length > 0}}">
+    <view class="day-card" a:for="{{itinerary}}" a:key="{{item.id}}">
+      <view class="day-header">
+        <text class="day-title">{{item.day}}</text>
+      </view>
+      
+      <!-- Time Activities -->
+      <view class="time-section" a:for="{{item.time}}" a:for-item="timeSlot" a:key="{{timeSlot}}">
+        <view class="time-slot" a:if="{{timeSlot.morning}}">
+          <view class="time-label">
+            <text class="time-icon">🌅</text>
+            <text class="time-text">Morning</text>
+          </view>
+          <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.morning}}" data-day="{{item.day}}">
+            <text class="activity-text">{{timeSlot.morning}}</text>
+            <text class="tap-hint">Tap for details</text>
+          </view>
+        </view>
+
+        <view class="time-slot" a:if="{{timeSlot.afternoon}}">
+          <view class="time-label">
+            <text class="time-icon">☀️</text>
+            <text class="time-text">Afternoon</text>
+          </view>
+          <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.afternoon}}" data-day="{{item.day}}">
+            <text class="activity-text">{{timeSlot.afternoon}}</text>
+            <text class="tap-hint">Tap for details</text>
+          </view>
+        </view>
+
+        <view class="time-slot" a:if="{{timeSlot.evening}}">
+          <view class="time-label">
+            <text class="time-icon">🌙</text>
+            <text class="time-text">Evening</text>
+          </view>
+          <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.evening}}" data-day="{{item.day}}">
+            <text class="activity-text">{{timeSlot.evening}}</text>
+            <text class="tap-hint">Tap for details</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Packing Items -->
+      <view class="packing-section" a:if="{{item.packingItem && item.packingItem.length > 0}}">
+        <text class="packing-title">Packing Items for {{item.day}}</text>
+        <view class="packing-grid">
+          <view class="packing-item" a:for="{{item.packingItem}}" a:key="{{index}}">
+            <text class="packing-icon">🎒</text>
+            <text class="packing-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty State -->
+  <view class="empty-container" a:if="{{!loading && !error && itinerary.length === 0}}">
+    <text class="empty-text">No itinerary found</text>
+    <button class="back-btn" onTap="onBack">Plan Another Trip</button>
+  </view>
+
+  <!-- Bottom Actions -->
+  <view class="bottom-actions" a:if="{{!loading && !error && itinerary.length > 0}}">
+    <button class="action-btn secondary" onTap="onBack">Plan New Trip</button>
+    <button class="action-btn primary" onTap="onShare">Share Itinerary</button>
+  </view>
+</view>

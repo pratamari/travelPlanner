@@ -1,0 +1,188 @@
+import { getTravelSuggestions, saveTravelData, getTravelData } from '../../utils/api.js';
+
+Page({
+  data: {
+    formData: {
+      destination: '',
+      departure_date: '',
+      return_date: '',
+      adults: 1,
+      children: 0,
+      activity_reference: ''
+    },
+    loading: false
+  },
+
+  onLoad(query) {
+    console.info(`Travel Planner loaded with query: ${JSON.stringify(query)}`);
+    // Load saved data if exists
+    const savedData = getTravelData();
+    if (savedData) {
+      this.setData({
+        formData: { ...this.data.formData, ...savedData }
+      });
+    }
+  },
+
+  onReady() {
+    // Page loading is complete
+  },
+
+  onShow() {
+    // Page display
+  },
+
+  onHide() {
+    // Page hidden
+  },
+
+  onUnload() {
+    // Page is closed
+  },
+
+  // Form input handlers
+  onDestinationInput(e) {
+    this.setData({
+      'formData.destination': e.detail.value
+    });
+  },
+
+  onDepartureDateChange(e) {
+    this.setData({
+      'formData.departure_date': e.detail.value
+    });
+  },
+
+  onReturnDateChange(e) {
+    this.setData({
+      'formData.return_date': e.detail.value
+    });
+  },
+
+  onActivityInput(e) {
+    this.setData({
+      'formData.activity_reference': e.detail.value
+    });
+  },
+
+  // Counter handlers
+  increaseAdults() {
+    const adults = this.data.formData.adults + 1;
+    if (adults <= 10) {
+      this.setData({
+        'formData.adults': adults
+      });
+    }
+  },
+
+  decreaseAdults() {
+    const adults = this.data.formData.adults - 1;
+    if (adults >= 1) {
+      this.setData({
+        'formData.adults': adults
+      });
+    }
+  },
+
+  increaseChildren() {
+    const children = this.data.formData.children + 1;
+    if (children <= 10) {
+      this.setData({
+        'formData.children': children
+      });
+    }
+  },
+
+  decreaseChildren() {
+    const children = this.data.formData.children - 1;
+    if (children >= 0) {
+      this.setData({
+        'formData.children': children
+      });
+    }
+  },
+
+  // Form validation
+  validateForm() {
+    const { destination, departure_date, return_date } = this.data.formData;
+    
+    if (!destination.trim()) {
+      my.showToast({
+        content: 'Please enter destination',
+        type: 'fail'
+      });
+      return false;
+    }
+
+    if (!departure_date) {
+      my.showToast({
+        content: 'Please select departure date',
+        type: 'fail'
+      });
+      return false;
+    }
+
+    if (!return_date) {
+      my.showToast({
+        content: 'Please select return date',
+        type: 'fail'
+      });
+      return false;
+    }
+
+    if (new Date(departure_date) >= new Date(return_date)) {
+      my.showToast({
+        content: 'Return date must be after departure date',
+        type: 'fail'
+      });
+      return false;
+    }
+
+    return true;
+  },
+
+  // Submit form
+  async onSubmit() {
+    if (!this.validateForm()) {
+      return;
+    }
+
+    this.setData({ loading: true });
+
+    try {
+      // Save form data locally
+      saveTravelData(this.data.formData);
+
+      // Call Hermes API
+      const response = await getTravelSuggestions(this.data.formData);
+
+      if (response.success) {
+        // Navigate to suggestions page
+        my.navigateTo({
+          url: '/pages/suggestions/suggestions'
+        });
+      } else {
+        my.showToast({
+          content: response.error || 'Failed to get travel suggestions',
+          type: 'fail'
+        });
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      my.showToast({
+        content: 'Something went wrong. Please try again.',
+        type: 'fail'
+      });
+    } finally {
+      this.setData({ loading: false });
+    }
+  },
+
+  onShareAppMessage() {
+    return {
+      title: 'Travel Planner - Plan your perfect trip',
+      desc: 'Get personalized travel suggestions and packing lists',
+      path: 'pages/index/index',
+    };
+  },
+});
