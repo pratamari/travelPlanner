@@ -66,13 +66,13 @@ Page({
   },
 
   // Counter handlers
-  onAdultIncrease() {
+  increaseAdult() {
     this.setData({
       'formData.adult': this.data.formData.adult + 1
     });
   },
 
-  onAdultDecrease() {
+  decreaseAdult() {
     if (this.data.formData.adult > 1) {
       this.setData({
         'formData.adult': this.data.formData.adult - 1
@@ -80,13 +80,13 @@ Page({
     }
   },
 
-  onChildrenIncrease() {
+  increaseChildren() {
     this.setData({
       'formData.children': this.data.formData.children + 1
     });
   },
 
-  onChildrenDecrease() {
+  decreaseChildren() {
     if (this.data.formData.children > 0) {
       this.setData({
         'formData.children': this.data.formData.children - 1
