@@ -20,53 +20,41 @@
   <!-- Itinerary Content -->
   <view class="content" a:if="{{!loading && !error && itinerary.length > 0}}">
     <view class="day-card" a:for="{{itinerary}}" a:key="{{item.id}}">
-      <view class="day-header">
-        <text class="day-title">{{item.day}}</text>
+      <view class="day-header" onTap="onDayToggle" data-day-id="{{item.id}}">
+        <view class="day-header-content">
+          <text class="day-title">Day {{item.id}} - {{item.activitySummary}}</text>
+          <text class="expand-icon" a:if="{{!expandedDays[item.id]}}">▼</text>
+          <text class="expand-icon" a:if="{{expandedDays[item.id]}}">▲</text>
+        </view>
+        <text class="day-summary" a:if="{{!expandedDays[item.id]}}">Tap to expand</text>
       </view>
       
-      <!-- Time Activities -->
-      <view class="time-section" a:for="{{item.time}}" a:for-item="timeSlot" a:key="{{timeSlot}}">
-        <view class="time-slot" a:if="{{timeSlot.morning}}">
-          <view class="time-label">
-            <text class="time-icon">🌅</text>
-            <text class="time-text">Morning</text>
-          </view>
-          <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.morning}}" data-day="{{item.day}}">
-            <text class="activity-text">{{timeSlot.morning}}</text>
-            <text class="tap-hint">Tap for details</text>
-          </view>
-        </view>
-
-        <view class="time-slot" a:if="{{timeSlot.afternoon}}">
-          <view class="time-label">
-            <text class="time-icon">☀️</text>
-            <text class="time-text">Afternoon</text>
-          </view>
-          <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.afternoon}}" data-day="{{item.day}}">
-            <text class="activity-text">{{timeSlot.afternoon}}</text>
-            <text class="tap-hint">Tap for details</text>
+      <!-- Expandable Content -->
+      <view class="day-content" a:if="{{expandedDays[item.id]}}">
+        <!-- Time Activities -->
+        <view class="time-section" a:for="{{item.time}}" a:for-item="timeSlot" a:key="{{index}}">
+          <view class="time-slot">
+            <view class="time-label">
+              <text class="time-icon" a:if="{{timeSlot.period === 'morning'}}">🌅</text>
+              <text class="time-icon" a:if="{{timeSlot.period === 'afternoon'}}">☀️</text>
+              <text class="time-icon" a:if="{{timeSlot.period === 'evening'}}">🌙</text>
+              <text class="time-text">{{timeSlot.period}}</text>
+            </view>
+            <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.activity}}" data-day="{{item.day}}">
+              <text class="activity-text">{{timeSlot.activity}}</text>
+              <text class="tap-hint">Tap for details</text>
+            </view>
           </view>
         </view>
 
-        <view class="time-slot" a:if="{{timeSlot.evening}}">
-          <view class="time-label">
-            <text class="time-icon">🌙</text>
-            <text class="time-text">Evening</text>
-          </view>
-          <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.evening}}" data-day="{{item.day}}">
-            <text class="activity-text">{{timeSlot.evening}}</text>
-            <text class="tap-hint">Tap for details</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- Packing Items -->
-      <view class="packing-section" a:if="{{item.packingItem && item.packingItem.length > 0}}">
-        <text class="packing-title">Packing Items for {{item.day}}</text>
-        <view class="packing-grid">
-          <view class="packing-item" a:for="{{item.packingItem}}" a:key="{{index}}">
-            <text class="packing-icon">🎒</text>
-            <text class="packing-text">{{item}}</text>
+        <!-- Packing Items -->
+        <view class="packing-section" a:if="{{item.packingItem && item.packingItem.length > 0}}">
+          <text class="packing-title">Packing Items for {{item.day}}</text>
+          <view class="packing-grid">
+            <view class="packing-item" a:for="{{item.packingItem}}" a:key="{{index}}">
+              <text class="packing-icon">🎒</text>
+              <text class="packing-text">{{item}}</text>
+            </view>
           </view>
         </view>
       </view>

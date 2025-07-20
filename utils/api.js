@@ -15,8 +15,11 @@ export const getTravelSuggestions = async (travelData) => {
     // Helper function to convert date format from YYYY-MM-DD to DD-MM-YYYY
     const formatDateForAPI = (dateString) => {
       if (!dateString) return dateString;
-      const [year, month, day] = dateString.split('-');
-      return `${day}-${month}-${year}`;
+      const parts = dateString.split('-');
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+      return day + '-' + month + '-' + year;
     };
     
     const payload = {
@@ -40,7 +43,7 @@ export const getTravelSuggestions = async (travelData) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${HERMES_KEY}`,
+        'Authorization': 'Bearer ' + HERMES_KEY,
         'X-User': HERMES_USER
       },
       data: payload
@@ -53,12 +56,39 @@ export const getTravelSuggestions = async (travelData) => {
     if (response.statusCode === 200 || response.status === 200) {
       const responseData = response.data;
       
-      // Check if workflow completed successfully
-      if (responseData && responseData.data && responseData.data.status === 'completed') {
-        return {
-          success: true,
-          data: responseData.data.outputs
-        };
+      // Check if workflow completed successfully (API returns 'succeeded' status)
+      if (responseData && responseData.data && responseData.data.status === 'succeeded') {
+        // Transform the API response to match our expected format
+        const apiOutputs = responseData.data.outputs;
+        
+        if (apiOutputs && apiOutputs.itinerary) {
+          // Debug: Log the itinerary data being returned
+          console.log('=== ITINERARY DATA DEBUG ===');
+          console.log('Total days found:', apiOutputs.itinerary.length);
+          console.log('Full itinerary data:', JSON.stringify(apiOutputs.itinerary, null, 2));
+          
+          // Verify each day has the expected structure
+          apiOutputs.itinerary.forEach((day, index) => {
+            console.log('Day ' + (index + 1) + ' (' + day.day + '):', {
+              id: day.id,
+              timeSlots: day.time ? day.time.length : 0,
+              packingItems: day.packingItem ? day.packingItem.length : 0
+            });
+          });
+          
+          return {
+            success: true,
+            data: {
+              itinerary: apiOutputs.itinerary
+            }
+          };
+        } else {
+          console.warn('No itinerary in API response, using fallback data');
+          return {
+            success: true,
+            data: generateMockSuggestions(travelData.destination)
+          };
+        }
       } 
       // If workflow failed, show error but use fallback
       else if (responseData && responseData.data && responseData.data.status === 'failed') {
@@ -70,7 +100,7 @@ export const getTravelSuggestions = async (travelData) => {
       }
       // If workflow is still running, use fallback for now
       else {
-        console.warn('Workflow status unclear, using fallback data');
+        console.warn('Workflow status unclear, using fallback data. Status:', responseData && responseData.data ? responseData.data.status : 'unknown');
         return {
           success: true,
           data: generateMockSuggestions(travelData.destination)
@@ -83,7 +113,7 @@ export const getTravelSuggestions = async (travelData) => {
         data: response.data,
         headers: response.headers
       });
-      throw new Error(`API Error: ${response.statusCode || response.status} - ${JSON.stringify(response.data)}`);
+      throw new Error('API Error: ' + (response.statusCode || response.status) + ' - ' + JSON.stringify(response.data));
     }
   } catch (error) {
     console.error('Hermes API Error:', error);

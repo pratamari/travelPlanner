@@ -99,13 +99,56 @@
 .day-header {
   background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
   padding: 16px 20px;
-  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.day-header:active {
+  background: linear-gradient(135deg, #0958d9 0%, #1677ff 100%);
+}
+
+.day-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
 }
 
 .day-title {
   font-size: 18px;
   font-weight: bold;
   color: #ffffff;
+  flex: 1;
+}
+
+.expand-icon {
+  font-size: 14px;
+  color: #ffffff;
+  opacity: 0.8;
+  margin-left: 12px;
+}
+
+.day-summary {
+  font-size: 14px;
+  color: #ffffff;
+  opacity: 0.9;
+  text-align: center;
+  font-style: italic;
+}
+
+.day-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
 }
 
 /* Time Sections */
@@ -137,6 +180,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #333333;
+  text-transform: capitalize;
 }
 
 .activity-card {
