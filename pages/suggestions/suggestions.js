@@ -47,28 +47,41 @@ Page({
 
   // Load travel suggestions
   async loadSuggestions() {
-    console.log('DEBUGGING - loadSuggestions called');
     try {
       this.setData({ loading: true, error: '' });
-      console.log('DEBUGGING - Set loading state');
 
       // First try to get from local storage
-      console.log('DEBUGGING - Checking saved suggestions');
-      const savedSuggestions = null; // Force using fresh API data
-      console.log('DEBUGGING - Saved suggestions (forced null):', savedSuggestions);
+      const savedSuggestions = getSavedTravelSuggestions();
       if (savedSuggestions && savedSuggestions.itinerary) {
-        console.log('DEBUGGING - Using saved data, processing', savedSuggestions.itinerary.length, 'days');
-        console.log('DEBUGGING - First saved day structure:', savedSuggestions.itinerary[0]);
-        
-        // Generate activity summaries for saved data
+        // Generate activity summaries and initialize checkbox states for saved data
         const savedItineraryWithSummaries = savedSuggestions.itinerary.map(function(day) {
-          console.log('DEBUGGING - Processing saved day:', day.id, 'with time:', day.time);
-          const activitySummary = this.generateActivitySummary(day.time || []);
-          console.log('DEBUGGING - Generated summary for saved day', day.id, ':', activitySummary);
-          return Object.assign({}, day, { activitySummary: activitySummary });
+          // Convert old format to new format
+          const convertedTimeData = this.convertTimeDataFormat(day.time || []);
+          const activitySummary = this.generateActivitySummary(convertedTimeData);
+          
+          // Initialize checked states for converted time activities
+          const timeWithChecked = convertedTimeData.map(function(timeSlot) {
+            return Object.assign({}, timeSlot, {
+              checked: timeSlot.checked || false
+            });
+          });
+          
+          // Initialize checked states for packing items if not present
+          const packingWithChecked = (day.packingItem || []).map(function(item) {
+            if (typeof item === 'string') {
+              return { name: item, checked: false };
+            }
+            return Object.assign({}, item, {
+              checked: item.checked || false
+            });
+          });
+          
+          return Object.assign({}, day, {
+            activitySummary: activitySummary,
+            time: timeWithChecked,
+            packingItem: packingWithChecked
+          });
         }.bind(this));
-        
-        console.log('DEBUGGING - Final saved itinerary with summaries:', savedItineraryWithSummaries);
         
         // Initialize all days as collapsed (no auto-expand)
         const expandedDays = {};
@@ -79,55 +92,59 @@ Page({
           expandedDays: expandedDays
         });
         
-        console.log('DEBUGGING - Set saved data, page itinerary length:', this.data.itinerary.length);
         return;
       }
 
       // If no saved data, get from API
-      console.log('DEBUGGING - No saved data, getting from API');
       const travelData = getTravelData();
-      console.log('DEBUGGING - Travel data:', travelData);
       if (!travelData) {
         throw new Error('No travel data found');
       }
 
-      console.log('DEBUGGING - Calling getTravelSuggestions');
       const response = await getTravelSuggestions(travelData);
-      console.log('DEBUGGING - Got API response:', response);
       
       if (response.success && response.data && response.data.itinerary) {
-      
-      // DEBUG: Check what we received
-      console.log('DEBUGGING - Raw API data:');
-      console.log('Total days:', response.data.itinerary.length);
-      console.log('Full itinerary:', response.data.itinerary);
-      
-      // Save suggestions locally
-      saveTravelSuggestions(response.data);
-      
-      // Generate activity summaries for each day
-      const itineraryWithSummaries = response.data.itinerary.map(function(day) {
-        console.log('Processing day:', day.id, 'with time slots:', day.time);
-        const activitySummary = this.generateActivitySummary(day.time || []);
-        console.log('Generated summary for day', day.id, ':', activitySummary);
-        return Object.assign({}, day, { activitySummary: activitySummary });
-      }.bind(this));
-      
-      console.log('Final itinerary with summaries:', itineraryWithSummaries);
-      
-      // Initialize all days as collapsed (no auto-expand)
-      const expandedDays = {};
-      
-      this.setData({
-        itinerary: itineraryWithSummaries,
-        loading: false,
-        expandedDays: expandedDays
-      });
-      
-      // DEBUG: Check what was actually set
-      console.log('DEBUGGING - After setData:');
-      console.log('Page itinerary length:', this.data.itinerary.length);
-      console.log('Page itinerary:', this.data.itinerary);
+        // Save suggestions locally
+        saveTravelSuggestions(response.data);
+        
+        // Generate activity summaries and initialize checkbox states for each day
+        const itineraryWithSummaries = response.data.itinerary.map(function(day) {
+          // Convert old format to new format
+          const convertedTimeData = this.convertTimeDataFormat(day.time || []);
+          const activitySummary = this.generateActivitySummary(convertedTimeData);
+          
+          // Initialize checked states for converted time activities
+          const timeWithChecked = convertedTimeData.map(function(timeSlot) {
+            return Object.assign({}, timeSlot, {
+              checked: false
+            });
+          });
+          
+          // Initialize checked states for packing items
+          const packingWithChecked = (day.packingItem || []).map(function(item) {
+            if (typeof item === 'string') {
+              return { name: item, checked: false };
+            }
+            return Object.assign({}, item, {
+              checked: false
+            });
+          });
+          
+          return Object.assign({}, day, {
+            activitySummary: activitySummary,
+            time: timeWithChecked,
+            packingItem: packingWithChecked
+          });
+        }.bind(this));
+        
+        // Initialize all days as collapsed (no auto-expand)
+        const expandedDays = {};
+        
+        this.setData({
+          itinerary: itineraryWithSummaries,
+          loading: false,
+          expandedDays: expandedDays
+        });
       } else {
         throw new Error(response.error || 'Failed to load suggestions');
       }
@@ -138,6 +155,59 @@ Page({
         error: error.message || 'Failed to load travel suggestions'
       });
     }
+  },
+
+  // Convert old format time data to new format
+  convertTimeDataFormat(timeData) {
+    if (!timeData || timeData.length === 0) {
+      return [];
+    }
+
+    // If it's already an array of objects with slot/activity, return as is (new format)
+    if (Array.isArray(timeData) && timeData.length > 0 && timeData[0].slot && timeData[0].activity) {
+      return timeData;
+    }
+
+    // If it's an array of old format objects, convert each one
+    if (Array.isArray(timeData)) {
+      const convertedData = [];
+      timeData.forEach(function(timeSlot) {
+        const converted = this.convertSingleTimeSlot(timeSlot);
+        // Use concat instead of spread operator for compatibility
+        convertedData.push.apply(convertedData, converted);
+      }.bind(this));
+      return convertedData;
+    }
+
+    // If it's a single object, convert it
+    return this.convertSingleTimeSlot(timeData);
+  },
+
+  // Convert a single time slot object from old format to new format
+  convertSingleTimeSlot(timeSlot) {
+    const result = [];
+    const timeSlots = ['morning', 'afternoon', 'evening'];
+    
+    timeSlots.forEach(function(slot) {
+      if (timeSlot[slot] && timeSlot[slot].trim().length > 0) {
+        result.push({
+          slot: slot,
+          activity: timeSlot[slot],
+          checked: timeSlot.checked || false
+        });
+      }
+    });
+    
+    // If no time-specific properties found, but there's a generic activity, use it
+    if (result.length === 0 && timeSlot.activity && timeSlot.activity !== 'Activity not available') {
+      result.push({
+        slot: 'morning', // Default to morning if no specific time
+        activity: timeSlot.activity,
+        checked: timeSlot.checked || false
+      });
+    }
+    
+    return result;
   },
 
   // Generate activity summary for a day
@@ -245,17 +315,59 @@ Page({
     this.setData({ expandedDays: expandedDays });
   },
 
-  // Handle activity tap
-  onActivityTap(e) {
-    const activity = e.currentTarget.dataset.activity;
-    const day = e.currentTarget.dataset.day;
+  // Toggle activity checkbox
+  onActivityToggle(e) {
+    const dayId = e.currentTarget.dataset.dayId;
+    const timeIndex = parseInt(e.currentTarget.dataset.timeIndex);
     
-    if (!activity) return;
+    if (dayId === undefined || timeIndex === undefined) return;
 
-    // Navigate to detail page with activity data
-    my.navigateTo({
-      url: '/pages/detail/detail?activity=' + encodeURIComponent(activity) + '&day=' + encodeURIComponent(day)
+    const itinerary = this.data.itinerary.slice();
+    const dayIndex = itinerary.findIndex(function(day) {
+      return day.id == dayId;
     });
+    
+    if (dayIndex !== -1 && itinerary[dayIndex].time && itinerary[dayIndex].time[timeIndex]) {
+      // Toggle the checked state
+      itinerary[dayIndex].time[timeIndex].checked = !itinerary[dayIndex].time[timeIndex].checked;
+      
+      this.setData({
+        itinerary: itinerary
+      });
+    }
+  },
+
+  // Toggle packing item checkbox
+  onPackingToggle(e) {
+    const dayId = e.currentTarget.dataset.dayId;
+    const packingIndex = parseInt(e.currentTarget.dataset.packingIndex);
+    
+    if (dayId === undefined || packingIndex === undefined) return;
+
+    const itinerary = this.data.itinerary.slice();
+    const dayIndex = itinerary.findIndex(function(day) {
+      return day.id == dayId;
+    });
+    
+    if (dayIndex !== -1 && itinerary[dayIndex].packingItem && itinerary[dayIndex].packingItem[packingIndex]) {
+      const packingItem = itinerary[dayIndex].packingItem[packingIndex];
+      
+      // Handle both string and object formats
+      if (typeof packingItem === 'string') {
+        // Convert string to object with checked state
+        itinerary[dayIndex].packingItem[packingIndex] = {
+          name: packingItem,
+          checked: true
+        };
+      } else {
+        // Toggle existing object
+        packingItem.checked = !packingItem.checked;
+      }
+      
+      this.setData({
+        itinerary: itinerary
+      });
+    }
   },
 
   // Retry loading

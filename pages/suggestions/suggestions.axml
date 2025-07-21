@@ -35,25 +35,36 @@
         <view class="time-section" a:for="{{item.time}}" a:for-item="timeSlot" a:key="{{index}}">
           <view class="time-slot">
             <view class="time-label">
-              <text class="time-icon" a:if="{{timeSlot.period === 'morning'}}">🌅</text>
-              <text class="time-icon" a:if="{{timeSlot.period === 'afternoon'}}">☀️</text>
-              <text class="time-icon" a:if="{{timeSlot.period === 'evening'}}">🌙</text>
-              <text class="time-text">{{timeSlot.period}}</text>
+              <text class="time-icon" a:if="{{timeSlot.slot === 'morning'}}">🌅</text>
+              <text class="time-icon" a:if="{{timeSlot.slot === 'afternoon'}}">☀️</text>
+              <text class="time-icon" a:if="{{timeSlot.slot === 'evening'}}">🌙</text>
+              <text class="time-text">{{timeSlot.slot}}</text>
             </view>
-            <view class="activity-card" onTap="onActivityTap" data-activity="{{timeSlot.activity}}" data-day="{{item.day}}">
-              <text class="activity-text">{{timeSlot.activity}}</text>
-              <text class="tap-hint">Tap for details</text>
+            <view class="activity-item" onTap="onActivityToggle" data-day-id="{{item.id}}" data-time-index="{{index}}">
+              <view class="checkbox-container">
+                <view class="checkbox {{timeSlot.checked ? 'checked' : ''}}">
+                  <text class="checkmark" a:if="{{timeSlot.checked}}">✓</text>
+                </view>
+              </view>
+              <text class="activity-text {{timeSlot.checked ? 'completed' : ''}}">{{timeSlot.activity}}</text>
             </view>
           </view>
         </view>
 
+        <!-- Divider Line -->
+        <view class="section-divider" a:if="{{item.packingItem && item.packingItem.length > 0}}"></view>
+
         <!-- Packing Items -->
         <view class="packing-section" a:if="{{item.packingItem && item.packingItem.length > 0}}">
           <text class="packing-title">Packing Items for {{item.day}}</text>
-          <view class="packing-grid">
-            <view class="packing-item" a:for="{{item.packingItem}}" a:key="{{index}}">
-              <text class="packing-icon">🎒</text>
-              <text class="packing-text">{{item}}</text>
+          <view class="packing-list">
+            <view class="packing-item" a:for="{{item.packingItem}}" a:for-item="packingItem" a:key="{{index}}" onTap="onPackingToggle" data-day-id="{{item.id}}" data-packing-index="{{index}}">
+              <view class="checkbox-container">
+                <view class="checkbox {{packingItem.checked ? 'checked' : ''}}">
+                  <text class="checkmark" a:if="{{packingItem.checked}}">✓</text>
+                </view>
+              </view>
+              <text class="packing-text {{packingItem.checked ? 'completed' : ''}}">{{packingItem.name || packingItem}}</text>
             </view>
           </view>
         </view>
