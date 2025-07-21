@@ -99,13 +99,56 @@
 .day-header {
   background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
   padding: 16px 20px;
-  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.day-header:active {
+  background: linear-gradient(135deg, #0958d9 0%, #1677ff 100%);
+}
+
+.day-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
 }
 
 .day-title {
   font-size: 18px;
   font-weight: bold;
   color: #ffffff;
+  flex: 1;
+}
+
+.expand-icon {
+  font-size: 14px;
+  color: #ffffff;
+  opacity: 0.8;
+  margin-left: 12px;
+}
+
+.day-summary {
+  font-size: 14px;
+  color: #ffffff;
+  opacity: 0.9;
+  text-align: center;
+  font-style: italic;
+}
+
+.day-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
 }
 
 /* Time Sections */
@@ -137,29 +180,96 @@
   font-size: 15px;
   font-weight: 600;
   color: #333333;
+  text-transform: capitalize;
 }
 
-.activity-card {
+/* Activity Items with Checkboxes */
+.activity-item {
+  display: flex;
+  align-items: center;
   padding: 16px 20px;
   background: #ffffff;
-  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.activity-card:active {
+.activity-item:active {
   background: #f8f9ff;
+}
+
+.checkbox-container {
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #007AFF;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+.checkbox.checked {
+  background: #007AFF;
+  border-color: #007AFF;
+  animation: checkboxPop 0.2s ease;
+}
+
+@keyframes checkboxPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.checkmark {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .activity-text {
   font-size: 16px;
   color: #333333;
   line-height: 1.5;
-  margin-bottom: 4px;
+  flex: 1;
+  transition: all 0.2s ease;
 }
 
-.tap-hint {
-  font-size: 12px;
-  color: #1677ff;
-  opacity: 0.8;
+.activity-text.completed {
+  color: #666666;
+  text-decoration: line-through;
+  animation: strikethrough 0.2s ease;
+}
+
+@keyframes strikethrough {
+  0% {
+    text-decoration: none;
+    color: #333333;
+  }
+  100% {
+    text-decoration: line-through;
+    color: #666666;
+  }
+}
+
+/* Section Divider */
+.section-divider {
+  height: 1px;
+  background: #D1D1D1;
+  margin: 0 20px;
 }
 
 /* Packing Section */
@@ -176,30 +286,35 @@
   margin-bottom: 12px;
 }
 
-.packing-grid {
+.packing-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
 }
 
 .packing-item {
   display: flex;
   align-items: center;
   background: #ffffff;
-  border-radius: 10px;
-  padding: 8px 12px;
-  border: 1px solid #e8e8e8;
-  flex: 0 0 auto;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.packing-icon {
-  font-size: 12px;
-  margin-right: 6px;
+.packing-item:active {
+  background: #f8f9ff;
 }
 
 .packing-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #333333;
+  flex: 1;
+  transition: all 0.2s ease;
+}
+
+.packing-text.completed {
+  color: #666666;
+  text-decoration: line-through;
+  animation: strikethrough 0.2s ease;
 }
 
 /* Empty State */
