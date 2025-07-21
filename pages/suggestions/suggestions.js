@@ -49,12 +49,37 @@ Page({
   async loadSuggestions() {
     try {
       this.setData({ loading: true, error: '' });
+      
+      // Debug: Check travel data dates
+      const debugTravelData = getTravelData();
+      if (debugTravelData) {
+        console.log('=== TRAVEL DATA DEBUG ===');
+        console.log('Departure date:', debugTravelData.departure_date);
+        console.log('Return date:', debugTravelData.return_date);
+        
+        // Calculate expected days
+        if (debugTravelData.departure_date && debugTravelData.return_date) {
+          const startDate = new Date(debugTravelData.departure_date);
+          const endDate = new Date(debugTravelData.return_date);
+          const timeDiff = endDate.getTime() - startDate.getTime();
+          const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end days
+          console.log('Expected days based on dates:', daysDiff);
+        }
+      }
 
       // First try to get from local storage
       const savedSuggestions = getSavedTravelSuggestions();
-      if (savedSuggestions && savedSuggestions.itinerary) {
+      if (savedSuggestions && savedSuggestions.itinerary && 
+          this.validateSavedSuggestions(savedSuggestions, debugTravelData)) {
+        // Filter saved data by date range first
+        const filteredSavedItinerary = this.filterItineraryByDateRange(
+          savedSuggestions.itinerary, 
+          debugTravelData.departure_date, 
+          debugTravelData.return_date
+        );
+        
         // Generate activity summaries and initialize checkbox states for saved data
-        const savedItineraryWithSummaries = savedSuggestions.itinerary.map(function(day) {
+        const savedItineraryWithSummaries = filteredSavedItinerary.map(function(day) {
           // Convert old format to new format
           const convertedTimeData = this.convertTimeDataFormat(day.time || []);
           const activitySummary = this.generateActivitySummary(convertedTimeData);
@@ -103,12 +128,36 @@ Page({
 
       const response = await getTravelSuggestions(travelData);
       
+      console.log('=== API RESPONSE DEBUG ===');
+      console.log('API Response success:', response.success);
+      if (response.data && response.data.itinerary) {
+        console.log('API returned days:', response.data.itinerary.length);
+        console.log('Day IDs:', response.data.itinerary.map(function(day) { return day.id; }));
+      }
+      
       if (response.success && response.data && response.data.itinerary) {
-        // Save suggestions locally
-        saveTravelSuggestions(response.data);
+        // Filter API data by date range first
+        const filteredApiItinerary = this.filterItineraryByDateRange(
+          response.data.itinerary,
+          travelData.departure_date,
+          travelData.return_date
+        );
+        
+        // Save filtered suggestions locally with travel parameters for validation
+        saveTravelSuggestions({ 
+          itinerary: filteredApiItinerary,
+          travelParams: {
+            destination: travelData.destination,
+            departure_date: travelData.departure_date,
+            return_date: travelData.return_date,
+            adult: travelData.adult,
+            children: travelData.children,
+            activity_reference: travelData.activity_reference
+          }
+        });
         
         // Generate activity summaries and initialize checkbox states for each day
-        const itineraryWithSummaries = response.data.itinerary.map(function(day) {
+        const itineraryWithSummaries = filteredApiItinerary.map(function(day) {
           // Convert old format to new format
           const convertedTimeData = this.convertTimeDataFormat(day.time || []);
           const activitySummary = this.generateActivitySummary(convertedTimeData);
@@ -154,6 +203,71 @@ Page({
         loading: false,
         error: error.message || 'Failed to load travel suggestions'
       });
+    }
+  },
+
+  // Validate if saved suggestions match current travel data
+  validateSavedSuggestions(savedSuggestions, currentTravelData) {
+    if (!savedSuggestions || !currentTravelData) {
+      return false;
+    }
+    
+    // Check if saved data has travel parameters
+    if (!savedSuggestions.travelParams) {
+      console.log('Saved data missing travel parameters - fetching fresh data');
+      return false;
+    }
+    
+    const saved = savedSuggestions.travelParams;
+    const current = currentTravelData;
+    
+    // Compare key parameters
+    const destinationMatch = saved.destination === current.destination;
+    const departureDateMatch = saved.departure_date === current.departure_date;
+    const returnDateMatch = saved.return_date === current.return_date;
+    const adultMatch = saved.adult === current.adult;
+    const childrenMatch = saved.children === current.children;
+    const activityMatch = saved.activity_reference === current.activity_reference;
+    
+    console.log('=== SAVED DATA VALIDATION ===');
+    console.log('Destination match:', destinationMatch, '(saved:', saved.destination, 'current:', current.destination, ')');
+    console.log('Departure date match:', departureDateMatch);
+    console.log('Return date match:', returnDateMatch);
+    console.log('Adult count match:', adultMatch);
+    console.log('Children count match:', childrenMatch);
+    console.log('Activity reference match:', activityMatch);
+    
+    const isValid = destinationMatch && departureDateMatch && returnDateMatch && 
+                   adultMatch && childrenMatch && activityMatch;
+    
+    console.log('Saved data is valid:', isValid);
+    return isValid;
+  },
+
+  // Filter itinerary based on date range
+  filterItineraryByDateRange(itinerary, departureDate, returnDate) {
+    if (!departureDate || !returnDate || !itinerary) {
+      return itinerary;
+    }
+    
+    try {
+      const startDate = new Date(departureDate);
+      const endDate = new Date(returnDate);
+      const timeDiff = endDate.getTime() - startDate.getTime();
+      const expectedDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end days
+      
+      console.log('Filtering itinerary: Expected days =', expectedDays, 'Received days =', itinerary.length);
+      
+      // If we have more days than expected, trim to the expected number
+      if (itinerary.length > expectedDays) {
+        console.log('Trimming itinerary from', itinerary.length, 'to', expectedDays, 'days');
+        return itinerary.slice(0, expectedDays);
+      }
+      
+      return itinerary;
+    } catch (error) {
+      console.warn('Error filtering itinerary by date range:', error);
+      return itinerary;
     }
   },
 

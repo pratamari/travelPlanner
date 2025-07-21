@@ -1,8 +1,7 @@
 <view class="container">
   <view class="header">
-    <text class="title">Your Travel Plan</text>
     <text class="destination">{{destination}}</text>
-    <text class="dates">{{departure_date}} - {{return_date}}</text>
+    <text class="day-summary">{{departure_date}} - {{return_date}}</text>
   </view>
 
   <!-- Loading State -->
