@@ -1,5 +1,6 @@
 /* Suggestions Page Styles */
 .container {
+  width: 100%;
   min-height: 100vh;
   background: #f7f7f7;
   padding-bottom: 60px;
