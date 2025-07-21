@@ -48,7 +48,7 @@
         <view class="counter-item">
         <view class="label-group">
           <text class="counter-label">Adult{{formData.adult > 1 ? 's' : ''}}</text>
-          <text class="counter-label-description">Usia 13 tahun ke atas</text>
+          <text class="counter-label-description">Usia 12 tahun ke atas</text>
         </view>
           <view class="counter">
             <button class="counter-btn" onTap="decreaseAdult">-</button>
@@ -59,7 +59,7 @@
         <view class="counter-item">
           <view class="label-group">
             <text class="counter-label">Children{{formData.children > 1 ? 's' : ''}}</text>
-            <text class="counter-label-description">Usia 2 - 12 tahun</text>
+            <text class="counter-label-description">Usia 2 - 11 tahun</text>
           </view>
           <view class="counter">
             <button class="counter-btn" onTap="decreaseChildren">-</button>
