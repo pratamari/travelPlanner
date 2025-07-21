@@ -1,4 +1,4 @@
-import { getTravelSuggestions, saveTravelData, getTravelData } from '../../utils/api.js';
+import { getTravelSuggestions, saveTravelData, getTravelData, clearAllTravelData } from '../../utils/api.js';
 
 Page({
   data: {
@@ -15,13 +15,6 @@ Page({
 
   onLoad(query) {
     console.info(`Travel Planner loaded with query: ${JSON.stringify(query)}`);
-    // Load saved data if exists
-    const savedData = getTravelData();
-    if (savedData) {
-      this.setData({
-        formData: { ...this.data.formData, ...savedData }
-      });
-    }
   },
 
   onReady() {
@@ -29,7 +22,21 @@ Page({
   },
 
   onShow() {
-    // Page display
+    // Page display - clear data and reset form every time page is shown
+    console.log('Index page shown - clearing all previous travel data for fresh start...');
+    clearAllTravelData();
+    
+    // Reset form data to defaults
+    this.setData({
+      formData: {
+        destination: '',
+        departure_date: '',
+        return_date: '',
+        adult: 1,
+        children: 0,
+        activity_reference: ''
+      }
+    });
   },
 
   onHide() {

@@ -80,6 +80,6 @@
   <!-- Bottom Actions -->
   <view class="bottom-actions" a:if="{{!loading && !error && itinerary.length > 0}}">
     <button class="action-btn secondary" onTap="onBack">Plan New Trip</button>
-    <button class="action-btn primary" onTap="onShare">Share Itinerary</button>
+    <button class="action-btn primary" onTap="onSave">Save Itinerary</button>
   </view>
 </view>

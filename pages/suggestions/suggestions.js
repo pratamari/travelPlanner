@@ -1,4 +1,4 @@
-import { getTravelSuggestions, saveTravelSuggestions, getSavedTravelSuggestions, getTravelData } from '../../utils/api.js';
+import { getTravelSuggestions, saveTravelSuggestions, getSavedTravelSuggestions, getTravelData, clearAllTravelData, saveItinerary } from '../../utils/api.js';
 
 Page({
   data: {
@@ -489,22 +489,52 @@ Page({
     this.loadSuggestions();
   },
 
-  // Go back to form
+  // Go back to form (Plan New Trip)
   onBack() {
+    console.log('Planning new trip - navigating back to form...');
+    
+    // Navigate back to form page (form will clear data on show)
     my.navigateBack();
   },
 
-  // Share itinerary
-  onShare() {
-    const destination = this.data.destination;
-    const departure_date = this.data.departure_date;
-    const return_date = this.data.return_date;
-    
-    my.showShareMenu({
-      title: 'My ' + destination + ' Travel Plan',
-      desc: departure_date + ' - ' + return_date,
-      path: 'pages/suggestions/suggestions'
-    });
+  // Save itinerary
+  onSave() {
+    try {
+      const travelParams = {
+        destination: this.data.destination,
+        departure_date: this.data.departure_date,
+        return_date: this.data.return_date,
+        adult: getTravelData().adult || 1,
+        children: getTravelData().children || 0,
+        activity_reference: getTravelData().activity_reference || ''
+      };
+      
+      const savedKey = saveItinerary(this.data.itinerary, travelParams);
+      
+      if (savedKey) {
+        // Show success toast
+        my.showToast({
+          content: 'Itinerary saved successfully!',
+          type: 'success',
+          duration: 2000
+        });
+        console.log('Itinerary saved successfully with key:', savedKey);
+      } else {
+        // Show error toast
+        my.showToast({
+          content: 'Failed to save itinerary',
+          type: 'fail',
+          duration: 2000
+        });
+      }
+    } catch (error) {
+      console.error('Error saving itinerary:', error);
+      my.showToast({
+        content: 'Failed to save itinerary',
+        type: 'fail',
+        duration: 2000
+      });
+    }
   },
 
   onShareAppMessage() {

@@ -204,3 +204,98 @@ export const getSavedTravelSuggestions = () => {
     return null;
   }
 };
+
+/**
+ * Clear all travel data from local storage
+ */
+export const clearAllTravelData = () => {
+  try {
+    // Clear travel form data
+    my.removeStorageSync({
+      key: 'travel_data'
+    });
+    
+    // Clear travel suggestions
+    my.removeStorageSync({
+      key: 'travel_suggestions'
+    });
+    
+    console.log('All travel data cleared successfully');
+  } catch (error) {
+    console.error('Failed to clear travel data:', error);
+  }
+};
+
+/**
+ * Save itinerary with unique key for multiple saved trips
+ * @param {Object} itineraryData - Itinerary data to save
+ * @param {Object} travelParams - Travel parameters
+ * @returns {string} Unique key for the saved itinerary
+ */
+export const saveItinerary = (itineraryData, travelParams) => {
+  try {
+    // Generate unique key based on destination and timestamp
+    const timestamp = new Date().getTime();
+    const destination = travelParams.destination.replace(/[^a-zA-Z0-9]/g, '_');
+    const uniqueKey = 'saved_itinerary_' + destination + '_' + timestamp;
+    
+    const saveData = {
+      itinerary: itineraryData,
+      travelParams: travelParams,
+      savedAt: new Date().toISOString(),
+      displayName: travelParams.destination + ' - ' + travelParams.departure_date
+    };
+    
+    my.setStorageSync({
+      key: uniqueKey,
+      data: JSON.stringify(saveData)
+    });
+    
+    // Also maintain a list of saved itinerary keys
+    const savedKeys = getSavedItineraryKeys();
+    savedKeys.push(uniqueKey);
+    my.setStorageSync({
+      key: 'saved_itinerary_keys',
+      data: JSON.stringify(savedKeys)
+    });
+    
+    console.log('Itinerary saved with key:', uniqueKey);
+    return uniqueKey;
+  } catch (error) {
+    console.error('Failed to save itinerary:', error);
+    return null;
+  }
+};
+
+/**
+ * Get list of saved itinerary keys
+ * @returns {Array} Array of saved itinerary keys
+ */
+export const getSavedItineraryKeys = () => {
+  try {
+    const result = my.getStorageSync({
+      key: 'saved_itinerary_keys'
+    });
+    return result.data ? JSON.parse(result.data) : [];
+  } catch (error) {
+    console.error('Failed to get saved itinerary keys:', error);
+    return [];
+  }
+};
+
+/**
+ * Get saved itinerary by key
+ * @param {string} key - Unique key for the saved itinerary
+ * @returns {Object|null} Saved itinerary data
+ */
+export const getSavedItinerary = (key) => {
+  try {
+    const result = my.getStorageSync({
+      key: key
+    });
+    return result.data ? JSON.parse(result.data) : null;
+  } catch (error) {
+    console.error('Failed to get saved itinerary:', error);
+    return null;
+  }
+};
